@@ -6,6 +6,12 @@
 #include <FreeImagePlus.h>
 #endif
 
+#ifdef USE_STB_IMAGE
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#endif // USE_STB_IMAGE
+
+
 #include <geGL/StaticCalls.h>
 using namespace ge::gl;
 using namespace fgl;
@@ -17,7 +23,7 @@ std::shared_ptr<ge::gl::Texture> Loader::texture(std::string const & fileName, b
   auto img = image(fileName);
   auto tex = std::make_shared<ge::gl::Texture>();
   tex->create(GL_TEXTURE_2D, GL_RGBA, 0, img->width, img->height, 0);
-  tex->setData2D(img->data, GL_BGRA, GL_UNSIGNED_BYTE);
+  tex->setData2D(img->data, img->format, GL_UNSIGNED_BYTE);
   if(generateMipmap)tex->generateMipmap();
   tex->texParameteri(GL_TEXTURE_MIN_FILTER, filterMin);
   tex->texParameteri(GL_TEXTURE_MAG_FILTER, filterMag);
@@ -71,6 +77,31 @@ ImageS Loader::image(std::string const & fileName) {
   img->data = new unsigned int[img->height*img->width];
   img->format = GL_BGRA;
   memcpy(img->data, fimg.accessPixels(), sizeof(int)*img->width*img->height);
+  return img;
+#elif USE_STB_IMAGE
+  int width, height, nrChannels;
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &nrChannels, 4);
+  if (!data)
+  {
+      std::string er = "File not found or unknown format: " + fileName;
+      std::cerr << er << "\n";
+      if (generateOnImageNotFound) {
+          std::cerr << er << "\n";
+          return generateImage();
+      }
+      else {
+          throw std::runtime_error(er.c_str());
+          return nullptr;
+      }
+  }
+  auto img = std::make_shared<Image>();
+  img->height = height;
+  img->width = width;
+  img->data = new unsigned int[img->height * img->width];
+  img->format = GL_RGBA;
+  memcpy(img->data, data, sizeof(int)* img->width* img->height);
+  stbi_image_free(data);
   return img;
 #else
   // generate random color checkboard
