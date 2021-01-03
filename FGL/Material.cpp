@@ -3,6 +3,8 @@
 using namespace fgl;
 
 void PhongMaterial::bind(ge::gl::ProgramS & program){
-	program->set4fv("diffuse", glm::value_ptr(diffuse));
-  diffuseTex->bind(0);
+	if (program->getUniformLocation("diffuse") != -1)
+		program->set4fv("diffuse", glm::value_ptr(diffuse));
+	if (diffuseTex->getId() != 0)
+		diffuseTex->bind(0);
 }
