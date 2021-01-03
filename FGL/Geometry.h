@@ -21,9 +21,9 @@ public:
   std::vector<glm::vec2> tc;
 protected:
 
-  ge::gl::VertexArrayS vao;
   ge::gl::BufferS vbo;
   ge::gl::BufferS ebo;
+  ge::gl::VertexArrayS vao;
 };
 
 
