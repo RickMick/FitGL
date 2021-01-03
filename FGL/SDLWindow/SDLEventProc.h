@@ -9,7 +9,7 @@ namespace fgl {
 #include<map>
 #include<memory>
 #include <functional>
-#include<SDL2/SDL.h>
+#include<SDL.h>
 
 using Callback = std::function<void()>;
 using EventCallback = std::function<bool(SDL_Event const&) >;
