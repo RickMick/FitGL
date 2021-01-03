@@ -42,7 +42,7 @@ NodeS Loader::scene(std::string const & fileName) {
   std::string dir = std::regex_replace(fileName, std::regex("[^/]+$"), "");
 
   auto importer = new Assimp::Importer();
-  auto scene = importer->ReadFile(fileName.c_str(), aiProcess_Triangulate);
+  auto scene = importer->ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
   if (!scene) {
     std::string er = "File not found: " + fileName + "\n";
     throw std::runtime_error(er.c_str());
