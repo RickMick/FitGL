@@ -20,7 +20,7 @@ foreach(dep ${deps})
   endif()
 endforeach(dep)
 
-set(HEADER_PATH ${FitGL_SOURCE_DIR}/${LIB_NAME})
+set(HEADER_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(includes
 	BaseApp.h
